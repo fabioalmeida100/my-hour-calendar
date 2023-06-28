@@ -1,0 +1,28 @@
+{
+  "events": [
+    {
+      "id": 1,
+      "description": "Tarefa 1",
+      "startDate": "2023-06-28T01:47",
+      "endDate": "2023-06-28T03:47",
+      "total": "2:0",
+      "checked": false
+    },
+    {
+      "id": 2,
+      "description": "Tarefa 2",
+      "startDate": "2023-06-28T01:51",
+      "endDate": "2023-06-28T02:51",
+      "total": "1:0",
+      "checked": false
+    },
+    {
+      "id": 3,
+      "description": "Tarefa 2",
+      "startDate": "2023-06-29T01:54",
+      "endDate": "2023-06-29T10:54",
+      "total": "9:0",
+      "checked": false
+    }
+  ]
+}
