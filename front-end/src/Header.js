@@ -7,7 +7,7 @@ function Header() {
         <Container>
           <Navbar.Brand href="#home"><span className="text-warning">MyHour</span>Calendar</Navbar.Brand>
           <Nav className="me-auto">
-            <Nav.Link href="/tasks">Atividades</Nav.Link>
+            <Nav.Link href="/events">Atividades</Nav.Link>
             <Nav.Link href="/report">Relatório</Nav.Link>
             <Nav.Link href="/profile">Perfil</Nav.Link>
           </Nav>

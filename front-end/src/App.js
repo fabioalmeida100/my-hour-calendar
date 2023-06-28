@@ -9,7 +9,6 @@ function App() {
   const [endDate, setEndDate] = useState('');
   const [listEvents, setListEvents] = useState([]);
   const [totalWorked, setTotalWorked] = useState('');
-  const [id, setId] = useState(1);
 
   useEffect(() => {
     fetchEvents();
@@ -20,17 +19,31 @@ function App() {
   }, [listEvents]);
   
   const fetchEvents = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_API_URL}/events`);
-    setListEvents(response.data);
+    const response = await axios.get(`${process.env.REACT_APP_API_URL}/events`, {
+      headers: {
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4Nzk2NzUxNiwiZXhwIjoxNjg3OTcxMTE2fQ.eHcgWeNW-vo8jQL6PCfTD-8xwdvFJl3IlBJZnUpNMR0' //localStorage.getItem('token')
+      }
+    });
+
+    const events = response.data.map((event) => {
+      const start = new Date(event.startDate);
+      const end = new Date(event.endDate);
+      const diff = (end - start)/1000;
+      const hours = Math.floor(diff / 3600) % 24;
+      const minutes = Math.floor(diff / 60) % 60;
+      event.total = `${hours}:${minutes}`;
+      return event;
+    });
+
+    setListEvents(events);
     handleTotalWorked();
-    setId(Math.max(...response.data.map((event) => event.id)) + 1);
   }
 
   const handleStartDate = (event) => {
     setStartDate(event.target.value);
   }
 
-  const handleEndDate = (event) => {    
+  const handleEndDate = (event) => {
     setEndDate(event.target.value);
   }
 
@@ -43,23 +56,20 @@ function App() {
       alert('Preencha todos os campos');
       return;
     }
-
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diff = (end - start)/1000;
-    const hours = Math.floor(diff / 3600) % 24;
-    const minutes = Math.floor(diff / 60) % 60;
-
+    
     const event = {
-      id: id,
       description,
       startDate,
       endDate,
-      total: `${hours}:${minutes}`,
       checked: false
     }
-    
-    await axios.post(`${process.env.REACT_APP_API_URL}/events`, event);
+        
+    await axios.post(`${process.env.REACT_APP_API_URL}/events`, event, 
+    {
+      headers: {
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4Nzk2NzUxNiwiZXhwIjoxNjg3OTcxMTE2fQ.eHcgWeNW-vo8jQL6PCfTD-8xwdvFJl3IlBJZnUpNMR0' //localStorage.getItem('token')
+      }
+    });
     await fetchEvents();
     
     setStartDate('');
@@ -67,6 +77,7 @@ function App() {
   }
 
   const handleChecked = (checkbox) => {
+    if (!listEvents && listEvents.length === 0) return;
   
     const id = Number(checkbox.target.value);
     const newList = listEvents.map((event) => {
@@ -81,16 +92,25 @@ function App() {
   
 
   const handleDeleteAllChecked = async () => {
-    listEvents.forEach((event) => {
+    if (!listEvents && listEvents.length === 0) return;
+
+    for (const event of listEvents) {
       if(event.checked) {
-        axios.delete(`${process.env.REACT_APP_API_URL}/events/${event.id}`);
+        await axios.delete(`${process.env.REACT_APP_API_URL}/events/${event.id}`,
+        {
+          headers: {
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4Nzk2NzUxNiwiZXhwIjoxNjg3OTcxMTE2fQ.eHcgWeNW-vo8jQL6PCfTD-8xwdvFJl3IlBJZnUpNMR0' //localStorage.getItem('token')
+          }
+        });
       }
-    });
+    }
 
     await fetchEvents();
   }
 
   const handleTotalWorked = () => {
+    if (!listEvents && listEvents.length === 0) return;
+
     if (listEvents && listEvents.length > 0) {
       let totalDateTimeWorked = null;
       listEvents.forEach((event) => totalDateTimeWorked += (new Date(event.endDate) - new Date(event.startDate)));
